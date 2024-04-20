@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <style>
+    #w{
+      width: 20vw;
+      height: 20vh;
+      object-fit: cover;
+    }
+    .wh{
+      text-align: center;
+    }
+  </style>
+  <div class="wh">
+    <img id="w" src="https://imgd.aeplcdn.com/272x153/n/cw/ec/40432/scorpio-n-exterior-right-front-three-quarter-75.jpeg?isig=0&q=80" alt="">
+    <h1>₹20000</h1>
+    <button id="rzp-button1">buy</button>
+
+  </div>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+<script>
+  var orderId ;
+$(document).ready(function(){
+    var settings = {
+  "url": "/create/orderId",
+  "method": "POST",
+  "timeout": 0,
+  "headers": {
+    "Content-Type": "application/json"
+  },
+  "data": JSON.stringify({
+    
+  }),
+};
+
+//creates new orderId everytime
+$.ajax(settings).done(function (response) {
+
+  var options = {
+    "key": "rzp_test_0ilqcWxtqhFQz4", // Enter the Key ID generated from the Dashboard
+    "amount": response.amount, // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
+    "currency": response.currency,
+    "name": "Mankind pharma",
+    "description": "tere yasi ki tse",
+    "image": "https://media.istockphoto.com/id/1587341757/photo/large-brown-bear-in-natural-habitat-rehabilitation-center-for-endangered-bears-in-mountains.jpg?s=1024x1024&w=is&k=20&c=2jpvQ1PZYaIFuIwcxlkvv5ER44t54mNaDc2wiPxE4sA=",
+    "order_id": response.id, //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
+    "handler": function (response){
+      var settings1 = {
+  "url": "/api/payment/verify",
+  "method": "POST",
+  "timeout": 0,
+  "headers": {
+    "Content-Type": "application/json"
+  },
+  "data": JSON.stringify({response}),
+}
+$.ajax(settings1).done(function (response){
+  if(response==true){
+    alert("payment sucessfull")
+  }
+  else{
+    alert("payment fail")
+  }
+})
+},
+ 
+    "notes": {
+        "address": "Razorpay Corporate Office"
+    },
+    "theme": {
+        "color": "#3399cc"
+    }
+};
+var rzp1 = new Razorpay(options);
+rzp1.on('payment.failed', function (response){
+        alert(response.error.code);
+        alert(response.error.description);
+        alert(response.error.source);
+        alert(response.error.step);
+        alert(response.error.reason);
+        alert(response.error.metadata.order_id);
+        alert(response.error.metadata.payment_id);
+});
+document.getElementById('rzp-button1').onclick = function(e){
+    rzp1.open();
+    e.preventDefault();
+}
+});
+});
+</script>
+</body>
+</html>
